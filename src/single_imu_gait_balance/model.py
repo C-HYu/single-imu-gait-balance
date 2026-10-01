@@ -2,7 +2,7 @@
 Single IMU Gait Balance
 -----------------------
 File        : src/single_imu_gait_balance/model.py
-Description : The bidirectional GRU network: IMU sequence (101 x 6) ->
+Description : The bi-directional GRU (bi-GRU) network: IMU sequence (101 x 6) ->
               bi-GRU layer 1 -> bi-GRU layer 2 -> dense layer -> output layer
               of 101 x 2 values (sagittal and frontal IA).
 Author      : Cheng-Hao Yu, PhD
@@ -19,7 +19,7 @@ ACTIVATIONS = {"tanh": nn.Tanh, "relu": nn.ReLU, "gelu": nn.GELU, "linear": nn.I
 
 
 class BiGRU(nn.Module):
-    """Two bidirectional GRU layers, a dense layer and a linear output layer.
+    """Two bi-directional GRU layers, a dense layer and a linear output layer.
 
     The whole sequence of layer-2 states feeds the dense layer, so every
     output sample can use information from the entire gait cycle.

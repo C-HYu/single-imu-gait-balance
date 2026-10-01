@@ -3,7 +3,7 @@ Single IMU Gait Balance
 -----------------------
 File        : src/single_imu_gait_balance/forceplate.py
 Description : Ground reaction of the force plates in the laboratory frame and
-              the centre of pressure (COP) of the summed force, resampled to
+              the center of pressure (COP) of the summed force, resampled to
               the marker frames.
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01

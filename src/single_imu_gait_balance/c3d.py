@@ -29,7 +29,7 @@ class ForcePlate:
         corner 1 lies in the +x/+y quadrant of the plate frame, corner 2 in
         -x/+y, corner 3 in -x/-y and corner 4 in +x/-y.
     origin : ndarray, shape (3,)
-        Vector from the centre of the plate surface to the transducer origin,
+        Vector from the center of the plate surface to the transducer origin,
         in plate coordinates, mm.
     force : ndarray, shape (n_samples, 3)
         Force in plate coordinates, N (analog rate).
@@ -54,7 +54,7 @@ class ForcePlate:
 
     @property
     def center(self) -> np.ndarray:
-        """Centre of the plate surface in the laboratory frame, mm."""
+        """Center of the plate surface in the laboratory frame, mm."""
         return self.corners.mean(axis=0)
 
     @property

@@ -41,7 +41,7 @@ def cycle_errors(ia_true: np.ndarray, ia_pred: np.ndarray, rcia_true: np.ndarray
     return {"rmse": rmse, "rrmse": 100.0 * rmse / np.where(span > 0, span, np.nan)}
 
 
-def summarise(errors: dict[str, np.ndarray]) -> pd.DataFrame:
+def summarize(errors: dict[str, np.ndarray]) -> pd.DataFrame:
     """Mean and SD over cycles, one row per balance variable."""
     return pd.DataFrame({"unit": [u for _, u in VARIABLES],
                          "rmse_mean": np.nanmean(errors["rmse"], axis=0),
@@ -51,5 +51,5 @@ def summarise(errors: dict[str, np.ndarray]) -> pd.DataFrame:
 
 
 def mean_rrmse(errors: dict[str, np.ndarray]) -> float:
-    """Mean rRMSE (%) over the four variables: the validation score to minimise."""
+    """Mean rRMSE (%) over the four variables: the validation score to minimize."""
     return float(np.nanmean(errors["rrmse"]))

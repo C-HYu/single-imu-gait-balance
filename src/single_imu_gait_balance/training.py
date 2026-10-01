@@ -126,7 +126,7 @@ def weighted_mse(ia_pred: torch.Tensor, ia_true: torch.Tensor, rcia_true: torch.
                  lam: float) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """Weighted MSE in scaled units: (total, IA term, RCIA term).
 
-    The derivative is taken with respect to the normalised cycle time
+    The derivative is taken with respect to the normalized cycle time
     (0 -> 1), and the target RCIA is expressed in the same units
     (gain x RCIA x cycle time), so cycles of different durations count alike.
     Because of these units, lambda is not the same number as in the paper.

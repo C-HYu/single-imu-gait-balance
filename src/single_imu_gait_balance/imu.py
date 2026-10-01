@@ -4,7 +4,7 @@ Single IMU Gait Balance
 File        : src/single_imu_gait_balance/imu.py
 Description : Sacral IMU input of the model: sensor axes -> body axes, 15 Hz
               low-pass filter, cut to the gait cycle, mirroring of right-limb
-              cycles, and time normalisation.
+              cycles, and time normalization.
               Body axes: x anterior, y up, z to the right. Six channels:
               acceleration (m/s^2, including gravity) and angular velocity
               (rad/s) about x, y and z.
@@ -18,7 +18,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.interpolate import interp1d
 
-from .signals import N_POINTS, lowpass, time_normalise
+from .signals import N_POINTS, lowpass, time_normalize
 
 #: Xsens MTw on the sacrum with its x axis up and its case facing backwards
 #: (sensor y to the left, z posterior): body = (-z, x, -y).
@@ -78,4 +78,4 @@ def imu_cycle(acc: np.ndarray, gyro: np.ndarray, rate: float, start_s: float, en
     # Cubic interpolation to 501 points, then linear to 101 points.
     x = np.linspace(0.0, 1.0, segment.shape[0])
     fine = interp1d(x, segment, axis=0, kind="cubic")(np.linspace(0.0, 1.0, 501))
-    return time_normalise(fine, N_POINTS)
+    return time_normalize(fine, N_POINTS)

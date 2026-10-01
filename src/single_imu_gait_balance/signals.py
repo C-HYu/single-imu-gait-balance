@@ -3,7 +3,7 @@ Single IMU Gait Balance
 -----------------------
 File        : src/single_imu_gait_balance/signals.py
 Description : Signal helpers: gap filling of marker trajectories, zero-phase
-              Butterworth low-pass filters and time normalisation of one gait
+              Butterworth low-pass filters and time normalization of one gait
               cycle.
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01
@@ -82,7 +82,7 @@ def lowpass_segments(trajectory: np.ndarray, rate: float, cutoff: float, order: 
     return out
 
 
-def time_normalise(signal: np.ndarray, n_points: int = N_POINTS) -> np.ndarray:
+def time_normalize(signal: np.ndarray, n_points: int = N_POINTS) -> np.ndarray:
     """Linearly resample one cycle (first and last sample at 0 % and 100 %) to ``n_points`` samples.
 
     Parameters

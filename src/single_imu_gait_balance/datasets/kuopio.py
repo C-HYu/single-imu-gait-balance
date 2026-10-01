@@ -6,7 +6,7 @@ Description : The Kuopio gait data set: download, and conversion of every
               walking trial into one gait cycle (see cycles.py).
               Source: Lavikainen J et al., Data in Brief 2024;56:110841,
               doi:10.1016/j.dib.2024.110841; data doi:10.5281/zenodo.10559504,
-              licence CC BY 4.0. It has 51 healthy adults walking overground
+              license CC BY 4.0. It has 51 healthy adults walking overground
               at slow, comfortable and fast speed over three force plates;
               Vicon at 100 Hz and Xsens MTw IMUs at 100 Hz.
 
@@ -19,9 +19,9 @@ Description : The Kuopio gait data set: download, and conversion of every
               Conversion of one trial:
               - COM: 7-segment model (com.py). The data set has no trochanter,
                 ASIS/PSIS or first-metatarsal-head markers, so the functional
-                hip centre replaces the trochanter and the midpoint of the
+                hip center replaces the trochanter and the midpoint of the
                 hallux and 4th-toe markers replaces the metatarsal head; the
-                knee centre is the midpoint of the epicondyle markers.
+                knee center is the midpoint of the epicondyle markers.
               - COP: summed wrench of the three floor plates (forceplate.py).
               - Cycle: heel strike on the middle plate to the next heel strike
                 of the same foot, which lands beyond the plates. That strike is
@@ -64,7 +64,7 @@ from ..gait import GaitCycle, heel_strikes, plate_contacts
 from ..imu import XSENS_SACRUM, imu_cycle, to_body_axes
 from ..inclination import inclination_angles, progression_frame, rcia_from_ia
 from ..rigid import carried_point, fit_rigid
-from ..signals import N_POINTS, fill_gaps, lowpass, lowpass_segments, time_normalise
+from ..signals import N_POINTS, fill_gaps, lowpass, lowpass_segments, time_normalize
 
 NAME = "kuopio"
 CITATION = ("Lavikainen J, Vartiainen P, Stenroth L, Karjalainen PA, Korhonen RK, Liukkonen MK, Mononen ME. "
@@ -97,18 +97,18 @@ ROLES = {
     "RMMA": "RTibia5", "RLMA": "RTibia6", "LMMA": "LTibia5", "LLMA": "LTibia6",  # malleoli
     "RHEE": "RFoot1", "RHAL": "RFoot2", "RT4": "RFoot3",                        # heel, hallux, 4th toe
     "LHEE": "LFoot1", "LHAL": "LFoot2", "LT4": "LFoot3",
-    "RHJC": "Pelvis_RFemur_score", "LHJC": "Pelvis_LFemur_score",                # functional joint centres
+    "RHJC": "Pelvis_RFemur_score", "LHJC": "Pelvis_LFemur_score",                # functional joint centers
     "RKJC_f": "RFemur_RTibia_score", "LKJC_f": "LFemur_LTibia_score",
     "RAJC_f": "RTibia_RFoot_score", "LAJC_f": "LTibia_LFoot_score",
 }
-#: Participant 1 has no epicondyle or malleolus markers (functional centres are
+#: Participant 1 has no epicondyle or malleolus markers (functional centers are
 #: used instead). Participant 2 has no acromion markers and cannot be used.
 ROLE_OVERRIDES = {
     1: {"RMFC": None, "RLFC": None, "LMFC": None, "LLFC": None,
         "RMMA": None, "RLMA": None, "LMMA": None, "LLMA": None},
     2: {"RSAP": None, "LSAP": None},
 }
-#: Marker cluster that carries each functional joint centre (fills its gaps).
+#: Marker cluster that carries each functional joint center (fills its gaps).
 CARRIERS = {"RHJC": PELVIS_CLUSTER, "LHJC": PELVIS_CLUSTER,
             "RKJC_f": tuple(f"RFemur{i}" for i in range(1, 5)), "LKJC_f": tuple(f"LFemur{i}" for i in range(1, 5)),
             "RAJC_f": tuple(f"RTibia{i}" for i in range(1, 5)), "LAJC_f": tuple(f"LTibia{i}" for i in range(1, 5))}
@@ -368,7 +368,7 @@ def process_trial(c3d_path: str | Path, imu_path: str | Path, subject: int, body
         lag = 0  # not identifiable: the nominal synchronisation
     imu = imu_cycle(to_body_axes(acc_raw, XSENS_SACRUM), to_body_axes(gyro_raw, XSENS_SACRUM), RATE,
                     (cycle.start + lag) / RATE, (cycle.end + lag) / RATE, side)
-    return {"imu": imu, "ia": time_normalise(ia, N_POINTS), "rcia": rcia_from_ia(ia, cycle_time, RATE),
+    return {"imu": imu, "ia": time_normalize(ia, N_POINTS), "rcia": rcia_from_ia(ia, cycle_time, RATE),
             "cycle_time_s": cycle_time, "reference_limb": side,
             "events_percent": {k.upper(): round(v, 2) for k, v in cycle.percent().items()},
             "imu_lag_samples": int(lag), "imu_lag_r": None if not np.isfinite(lag_r) else round(lag_r, 3), **events}

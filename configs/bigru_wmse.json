@@ -1,5 +1,5 @@
 {
-  "_comment": "Bi-GRU with weighted MSE; hyper-parameters chosen by Bayesian optimisation (Optuna TPE) by the author. Default of 'gait-balance train'.",
+  "_comment": "Bi-GRU with weighted MSE; hyper-parameters chosen by Bayesian optimization (Optuna TPE) by the author. Default of 'gait-balance train'.",
   "hidden1": 192,
   "hidden2": 16,
   "dense_units": 790,

@@ -2,7 +2,7 @@
 Single IMU Gait Balance
 -----------------------
 File        : src/single_imu_gait_balance/com.py
-Description : Whole-body centre of mass (COM) from a 7-segment model: thighs,
+Description : Whole-body center of mass (COM) from a 7-segment model: thighs,
               shanks, feet and head-arms-trunk, with Winter's segment mass
               fractions and COM positions (Winter DA, Biomechanics and Motor
               Control of Human Movement, 4th ed., Table 4.1).
@@ -28,7 +28,7 @@ SEGMENTS = (
 )
 
 #: Points the model needs, for each side (prefix L or R):
-#: TRO greater trochanter, KJC knee joint centre, MMA / LMA medial / lateral
+#: TRO greater trochanter, KJC knee joint center, MMA / LMA medial / lateral
 #: malleolus, MTH first metatarsal head, SAP acromion.
 REQUIRED_POINTS = tuple(f"{s}{p}" for s in "LR" for p in ("TRO", "KJC", "MMA", "LMA", "MTH", "SAP"))
 

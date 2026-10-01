@@ -71,7 +71,7 @@ def heel_strikes(heel: np.ndarray, pelvis: np.ndarray, forward: np.ndarray,
     Parameters
     ----------
     heel, pelvis : ndarray, shape (n_frames, 3)
-        Heel marker and a pelvis point (e.g. the centre of a sacral cluster), mm.
+        Heel marker and a pelvis point (e.g. the center of a sacral cluster), mm.
     forward : ndarray, shape (3,)
         Unit vector of the walking direction.
     min_distance : int

@@ -120,11 +120,11 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     from .experiment import evaluate_model, load_parts, train_and_test, tune
-    from .metrics import mean_rrmse, summarise
+    from .metrics import mean_rrmse, summarize
     if args.command == "evaluate":
         from .cycles import load_cycles
         errors = evaluate_model(args.model, load_cycles(args.test), args.out)
-        print(summarise(errors).round(3).to_string())
+        print(summarize(errors).round(3).to_string())
         print(f"mean rRMSE {mean_rrmse(errors):.2f} %")
         return
     train_dir, val_dir, test_dir = _folders(args)

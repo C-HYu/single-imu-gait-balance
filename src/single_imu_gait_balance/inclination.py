@@ -3,7 +3,7 @@ Single IMU Gait Balance
 -----------------------
 File        : src/single_imu_gait_balance/inclination.py
 Description : The two balance variables: the inclination angle (IA) of the
-              centre-of-pressure-to-centre-of-mass vector in the sagittal and
+              center-of-pressure-to-center-of-mass vector in the sagittal and
               frontal planes, and its rate of change (RCIA).
               - IA: u = (COM - COP) / |COM - COP|, t = Z x u, sagittal IA =
                 asin(t . Y), frontal IA = s asin(t . X), with X the walking
@@ -24,7 +24,7 @@ import numpy as np
 from scipy.interpolate import make_smoothing_spline
 
 from .gait import GaitCycle
-from .signals import N_POINTS, time_normalise
+from .signals import N_POINTS, time_normalize
 
 VERTICAL = np.array([0.0, 0.0, 1.0])
 
@@ -78,7 +78,7 @@ def rcia_from_ia(ia: np.ndarray, cycle_time: float, frame_rate: float, n_points:
         Hz of the motion capture; the IA is first brought to that frame grid.
     """
     n_frames = max(int(round(cycle_time * frame_rate)) + 1, 10)
-    ia_frames = time_normalise(ia, n_frames)
+    ia_frames = time_normalize(ia, n_frames)
     t_frames = np.linspace(0.0, cycle_time, n_frames)
     t_out = np.linspace(0.0, cycle_time, n_points)
     out = np.empty((n_points, ia.shape[1]))
@@ -88,7 +88,7 @@ def rcia_from_ia(ia: np.ndarray, cycle_time: float, frame_rate: float, n_points:
 
 
 def finite_difference_rcia(ia: np.ndarray, cycle_time: np.ndarray) -> np.ndarray:
-    """RCIA (deg/s) of time-normalised IA by central differences (one-sided at the ends).
+    """RCIA (deg/s) of time-normalized IA by central differences (one-sided at the ends).
 
     Parameters
     ----------

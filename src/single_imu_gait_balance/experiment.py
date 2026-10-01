@@ -22,7 +22,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from .cycles import CycleSet, load_cycles
-from .metrics import NAMES, PAPER, cycle_errors, mean_rrmse, summarise
+from .metrics import NAMES, PAPER, cycle_errors, mean_rrmse, summarize
 from .training import Predictor, TrainConfig, get_device, prepare, save_model, train
 
 
@@ -71,7 +71,7 @@ def train_and_test(parts: dict[str, CycleSet], config: dict, out_dir: str | Path
         line = f"seed {seed}: best epoch {result.best_epoch}, validation mean rRMSE {result.best_score:.3f} %"
         if "test" in prepared.parts:
             errors = evaluate_model(folder / "model.pt", parts["test"], folder / "test_errors.csv")
-            summary = summarise(errors)
+            summary = summarize(errors)
             rows += [{"seed": seed, "variable": name, **summary.loc[name].drop("unit").to_dict()} for name in NAMES]
             line += f", test mean rRMSE {mean_rrmse(errors):.3f} %"
         print(line, flush=True)

@@ -41,7 +41,7 @@ To let others download and convert a public data set with two commands, add a mo
 
 ```python
 NAME = "mydata"                      # gait-balance download mydata / build mydata
-CITATION = "Authors. Title. Journal Year. doi:... Data: doi:... (licence)"
+CITATION = "Authors. Title. Journal Year. doi:... Data: doi:... (license)"
 
 def download(raw_dir, method="partial", zip_dir=None, with_mtb=False):
     """Fetch the needed files into raw_dir (see download.py for helpers).
@@ -56,7 +56,7 @@ The building blocks in the package:
 | Module | Provides |
 |---|---|
 | `c3d.read_c3d` | markers and force plates from a C3D file |
-| `signals` | gap filling, filters, time normalisation |
+| `signals` | gap filling, filters, time normalization |
 | `forceplate.ground_reaction` | summed ground reaction and its COP |
 | `com.body_com` | 7-segment COM from named points (`com.REQUIRED_POINTS`) |
 | `gait` | plate contacts, heel strikes from the heel marker |
@@ -68,5 +68,5 @@ The building blocks in the package:
 `kuopio.py` is a complete example. It covers a marker set without trochanter or metatarsal-head markers,
 three force plates, and an IMU stored as strapdown increments.
 
-Respect the data set's licence and cite it. Download the data from its original repository rather than
+Respect the data set's license and cite it. Download the data from its original repository rather than
 copying it into this repository.

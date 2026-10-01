@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the article below."
 title: "Single IMU Gait Balance"
-abstract: "Dynamic balance (COM-COP inclination angle and its rate of change) during gait from one sacral IMU with a bidirectional GRU and a weighted MSE loss, following Yu et al. (2023), demonstrated on the public Kuopio gait data set."
+abstract: "Dynamic balance (COM-COP inclination angle and its rate of change) during gait from one sacral IMU with a bi-directional GRU and a weighted MSE loss, following Yu et al. (2023), demonstrated on the public Kuopio gait data set."
 authors:
   - family-names: "Yu"
     given-names: "Cheng-Hao"
