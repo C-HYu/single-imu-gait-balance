@@ -94,8 +94,8 @@ RAM and an NVIDIA GeForce GTX 1650 SUPER (4 GB).
 
 | Step | Time |
 |---|---|
-| `download kuopio` | about 1 hour at 2 MB/s (depends on your internet connection) |
-| `build kuopio` | about 8 minutes |
+| `download kuopio` | 1–3 hours, depending on your internet connection (about 1 hour at 2 MB/s; 2.9 hours at 0.7 MB/s) |
+| `build kuopio` | about 4–8 minutes |
 | `train`, one seed | about 5 minutes with the GPU; about 45 minutes on the CPU alone |
 
 ### Commands
