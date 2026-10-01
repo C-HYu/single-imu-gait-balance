@@ -1,4 +1,4 @@
-<h1 align="center">Single IMU Gait Balance</h1>
+<h1 align="center">A Bi-Directional Gated Recurrent Unit Model for Extracting Dynamic Balance Variables during Gait from a Single Inertial Measurement Unit</h1>
 
 <p align="center">
   Dynamic balance during walking, estimated from <b>one inertial measurement unit (IMU) on the sacrum</b>.

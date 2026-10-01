@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the article below."
-title: "Single IMU Gait Balance"
+title: "A Bi-Directional Gated Recurrent Unit Model for Extracting Dynamic Balance Variables during Gait from a Single Inertial Measurement Unit"
 abstract: "Dynamic balance (COM-COP inclination angle and its rate of change) during gait from one sacral IMU with a bi-directional GRU and a weighted MSE loss, following Yu et al. (2023), demonstrated on the public Kuopio gait data set."
 authors:
   - family-names: "Yu"
