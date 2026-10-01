@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "single-imu-gait-balance"
+version = "1.0.0"
+description = "Dynamic balance (COM-COP inclination angle and its rate of change) during gait from one sacral IMU with a bidirectional GRU"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Cheng-Hao Yu, PhD" }]
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "optuna", "ezc3d", "openpyxl",
+                "pywin32; sys_platform == 'win32'"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+gait-balance = "single_imu_gait_balance.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120

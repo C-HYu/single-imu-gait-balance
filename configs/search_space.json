@@ -1,0 +1,12 @@
+{
+  "_comment": "Ranges of the Bayesian search (gait-balance tune). int/float: low, high (log: true for a log scale; step for integers); choice: options.",
+  "hidden1": {"type": "int", "low": 64, "high": 512, "step": 32},
+  "hidden2": {"type": "int", "low": 16, "high": 256, "step": 16},
+  "dense_units": {"type": "int", "low": 64, "high": 1024, "log": true},
+  "activation": {"type": "choice", "options": ["tanh", "relu", "gelu"]},
+  "dropout": {"type": "float", "low": 0.0, "high": 0.5},
+  "lr": {"type": "float", "low": 0.0001, "high": 0.003, "log": true},
+  "weight_decay": {"type": "float", "low": 1e-07, "high": 0.001, "log": true},
+  "batch_size": {"type": "choice", "options": [16, 32, 64]},
+  "lam": {"type": "float", "low": 0.001, "high": 100.0, "log": true}
+}

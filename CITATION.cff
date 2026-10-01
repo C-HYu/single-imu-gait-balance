@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article below."
+title: "Single IMU Gait Balance"
+abstract: "Dynamic balance (COM-COP inclination angle and its rate of change) during gait from one sacral IMU with a bidirectional GRU and a weighted MSE loss, following Yu et al. (2023), demonstrated on the public Kuopio gait data set."
+authors:
+  - family-names: "Yu"
+    given-names: "Cheng-Hao"
+version: "1.0.0"
+date-released: "2026-10-01"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Recurrent Neural Network Methods for Extracting Dynamic Balance Variables during Gait from a Single Inertial Measurement Unit"
+  authors:
+    - family-names: "Yu"
+      given-names: "Cheng-Hao"
+    - family-names: "Yeh"
+      given-names: "Chih-Ching"
+    - family-names: "Lu"
+      given-names: "Yi-Fu"
+    - family-names: "Lu"
+      given-names: "Yi-Ling"
+    - family-names: "Wang"
+      given-names: "Ting-Ming"
+    - family-names: "Lin"
+      given-names: "Frank Yeong-Sung"
+    - family-names: "Lu"
+      given-names: "Tung-Wu"
+  journal: "Sensors"
+  volume: 23
+  issue: 22
+  start: 9040
+  year: 2023
+  doi: "10.3390/s23229040"

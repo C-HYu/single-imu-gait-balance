@@ -1,0 +1,14 @@
+{
+  "_comment": "Settings stated in Yu et al. (2023): GRU 256/64 cells, dense 202, Adam lr 1e-4, batch 32, 100 epochs, lambda 5. Not stated there: dense activation, dropout, weight decay (tanh, 0, 0 here). The RCIA term is computed in scaled units here, so lambda = 5 does not weigh it as in the paper.",
+  "hidden1": 256,
+  "hidden2": 64,
+  "dense_units": 202,
+  "activation": "tanh",
+  "dropout": 0.0,
+  "lr": 0.0001,
+  "weight_decay": 0.0,
+  "batch_size": 32,
+  "lam": 5.0,
+  "max_epochs": 100,
+  "patience": null
+}

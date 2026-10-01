@@ -1,0 +1,13 @@
+# Downloaded and converted data, and training outputs, stay on the local computer
+data/
+runs/
+
+# Log files (the Xsens Device API writes xda_com.log when it reads .mtb files)
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/

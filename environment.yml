@@ -1,0 +1,24 @@
+# Conda environment for single-imu-gait-balance (tested versions).
+#   conda env create -f environment.yml
+#   conda activate gait-balance
+# PyTorch from PyPI runs on the CPU on Windows and macOS. For an NVIDIA GPU on
+# Windows, afterwards run:
+#   pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cu130 --force-reinstall
+name: gait-balance
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - numpy==2.5.3
+      - scipy==1.18.1
+      - pandas==3.0.6
+      - scikit-learn==1.9.1
+      - torch==2.14.0
+      - optuna==5.0.0
+      - ezc3d==1.7.2
+      - openpyxl==3.1.5
+      - pywin32==312; sys_platform == "win32"
+      - pytest==9.1.1
+      - -e .
