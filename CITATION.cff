@@ -32,3 +32,49 @@ preferred-citation:
   start: 9040
   year: 2023
   doi: "10.3390/s23229040"
+references:
+  - type: article
+    title: "Gait data from 51 healthy participants with motion capture, inertial measurement units, and computer vision"
+    authors:
+      - family-names: "Lavikainen"
+        given-names: "Jere"
+      - family-names: "Vartiainen"
+        given-names: "Paavo"
+      - family-names: "Stenroth"
+        given-names: "Lauri"
+      - family-names: "Karjalainen"
+        given-names: "Pasi A."
+      - family-names: "Korhonen"
+        given-names: "Rami K."
+      - family-names: "Liukkonen"
+        given-names: "Mimmi K."
+      - family-names: "Mononen"
+        given-names: "Mika E."
+    journal: "Data in Brief"
+    volume: 56
+    start: 110841
+    year: 2024
+    doi: "10.1016/j.dib.2024.110841"
+  - type: data
+    title: "Kuopio gait dataset: motion capture, inertial measurement and video-based sagittal-plane keypoint data from walking trials"
+    authors:
+      - family-names: "Lavikainen"
+        given-names: "Jere"
+      - family-names: "Vartiainen"
+        given-names: "Paavo"
+      - family-names: "Stenroth"
+        given-names: "Lauri"
+      - family-names: "Karjalainen"
+        given-names: "Pasi"
+      - family-names: "Korhonen"
+        given-names: "Rami"
+      - family-names: "Liukkonen"
+        given-names: "Mimmi"
+      - family-names: "Mononen"
+        given-names: "Mika"
+    publisher:
+      name: "Zenodo"
+    version: "1.0.0"
+    date-released: "2024-01-24"
+    license: CC-BY-4.0
+    doi: "10.5281/zenodo.10559504"

@@ -183,12 +183,52 @@ data/, runs/                created locally, not part of the repository
 
 ## Citation
 
-If you use this code, please cite the article above (see `CITATION.cff`). If you use the Kuopio data, also cite:
+If you use this code, please cite the article above (see also `CITATION.cff`). If you use the Kuopio data, also cite:
 
 > Lavikainen J, Vartiainen P, Stenroth L, Karjalainen PA, Korhonen RK, Liukkonen MK, Mononen ME. Gait data from 51
 > healthy participants with motion capture, inertial measurement units, and computer vision. *Data in Brief*
 > 2024;56:110841. https://doi.org/10.1016/j.dib.2024.110841. Data: https://doi.org/10.5281/zenodo.10559504
 > (CC BY 4.0).
+
+BibTeX:
+
+```bibtex
+@article{yu2023recurrent,
+  author  = {Yu, Cheng-Hao and Yeh, Chih-Ching and Lu, Yi-Fu and Lu, Yi-Ling and Wang, Ting-Ming and
+             Lin, Frank Yeong-Sung and Lu, Tung-Wu},
+  title   = {Recurrent Neural Network Methods for Extracting Dynamic Balance Variables during Gait
+             from a Single Inertial Measurement Unit},
+  journal = {Sensors},
+  year    = {2023},
+  volume  = {23},
+  number  = {22},
+  pages   = {9040},
+  doi     = {10.3390/s23229040}
+}
+
+@article{lavikainen2024gait,
+  author  = {Lavikainen, Jere and Vartiainen, Paavo and Stenroth, Lauri and Karjalainen, Pasi A. and
+             Korhonen, Rami K. and Liukkonen, Mimmi K. and Mononen, Mika E.},
+  title   = {Gait data from 51 healthy participants with motion capture, inertial measurement units,
+             and computer vision},
+  journal = {Data in Brief},
+  year    = {2024},
+  volume  = {56},
+  pages   = {110841},
+  doi     = {10.1016/j.dib.2024.110841}
+}
+
+@misc{lavikainen2024kuopio,
+  author    = {Lavikainen, Jere and Vartiainen, Paavo and Stenroth, Lauri and Karjalainen, Pasi and
+               Korhonen, Rami and Liukkonen, Mimmi and Mononen, Mika},
+  title     = {Kuopio gait dataset: motion capture, inertial measurement and video-based sagittal-plane
+               keypoint data from walking trials},
+  publisher = {Zenodo},
+  year      = {2024},
+  version   = {1.0.0},
+  doi       = {10.5281/zenodo.10559504}
+}
+```
 
 ## Licence
 
