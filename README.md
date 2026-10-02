@@ -71,7 +71,7 @@ gait-balance build kuopio
 
 - `download` fetches only the files needed (the walking C3D files and the IMU files of each participant), about
   7 GB of the 23 GB archives, from [Zenodo](https://doi.org/10.5281/zenodo.10559504).
-  - Every file is checked against the archive's checksum.
+  - Every file is checked against the archive's checksum. 
   - If the download is interrupted, run the same command again: it continues where it stopped.
 - `build` turns every walking trial into one gait cycle. It writes one folder per gait cycle into
   `data/kuopio/training`, `data/kuopio/validation` and `data/kuopio/testing` (80/10/10 % of the gait cycles).
