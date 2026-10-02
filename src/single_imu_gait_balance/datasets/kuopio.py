@@ -37,7 +37,7 @@ Description : The Kuopio gait data set: download, and conversion of every
                 speed of the pelvis marker cluster.
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 """
 
 from __future__ import annotations
@@ -52,19 +52,19 @@ import numpy as np
 import pandas as pd
 import scipy.io as sio
 from scipy.spatial.transform import Rotation
-from sklearn.model_selection import train_test_split
 
 from .. import __version__
 from ..c3d import read_c3d
 from ..com import body_com
 from ..cycles import write_cycle
 from ..download import download_file, extract_local, extract_remote
-from ..forceplate import GRAVITY, ground_reaction
-from ..gait import GaitCycle, heel_strikes, plate_contacts
+from ..forceplate import floor_plates, ground_reaction
+from ..gait import plate_cycle
 from ..imu import XSENS_SACRUM, imu_cycle, to_body_axes
 from ..inclination import inclination_angles, progression_frame, rcia_from_ia
 from ..rigid import carried_point, fit_rigid
 from ..signals import N_POINTS, fill_gaps, lowpass, lowpass_segments, time_normalize
+from ..splits import split_by_trial
 
 NAME = "kuopio"
 CITATION = ("Lavikainen J, Vartiainen P, Stenroth L, Karjalainen PA, Korhonen RK, Liukkonen MK, Mononen ME. "
@@ -112,12 +112,6 @@ ROLE_OVERRIDES = {
 CARRIERS = {"RHJC": PELVIS_CLUSTER, "LHJC": PELVIS_CLUSTER,
             "RKJC_f": tuple(f"RFemur{i}" for i in range(1, 5)), "LKJC_f": tuple(f"LFemur{i}" for i in range(1, 5)),
             "RAJC_f": tuple(f"RTibia{i}" for i in range(1, 5)), "LAJC_f": tuple(f"LTibia{i}" for i in range(1, 5))}
-#: Tolerance (mm) beyond a plate edge for the heel marker (it sits behind and
-#: above the heel's contact point) and for the toe midpoint.
-PLATE_MARGIN = {"HEE": 60.0, "MTH": 40.0}
-#: Largest lead (frames) of the heel-marker strike over the plate contact;
-#: a larger lead means that the heel landed beside the plate.
-STRIKE_LEAD_LIMIT = 10
 
 
 # =============================================================================
@@ -225,75 +219,6 @@ def anatomical_points(markers: dict[str, np.ndarray], subject: int) -> dict[str,
     return points
 
 
-def _inside(plate, point: np.ndarray, margin: float) -> bool:
-    """Is a point over the plate surface, within ``margin`` (mm) of its edges?"""
-    low, high = plate.corners[:, :2].min(axis=0), plate.corners[:, :2].max(axis=0)
-    return bool(np.all((point[:2] >= low - margin) & (point[:2] <= high + margin)))
-
-
-def three_plate_cycle(plates: list, plate_fz: np.ndarray, body_mass: float, points: dict[str, np.ndarray],
-                      pelvis: np.ndarray) -> tuple[GaitCycle, str, dict]:
-    """Gait cycle and reference side from three floor plates and the heel markers.
-
-    With the plates ordered by first contact (p0, p1, p2), the reference foot
-    lands on p1: start = first contact on p1, CTO = last contact on p0 + 1,
-    CHS = first contact on p2, TO = last contact on p1 + 1, end = next heel
-    strike of the reference heel (bias-corrected, see the module description).
-    """
-    weight = body_mass * GRAVITY
-    contacts = plate_contacts(plate_fz, 0.03 * weight)
-    if any(c is None for c in contacts):
-        raise ValueError("not all three floor plates were loaded")
-    order = sorted(range(3), key=lambda i: contacts[i][0])
-    for k in order:
-        first, last = contacts[k]
-        if (np.abs(plate_fz[first:last, k]) > 0.03 * weight).mean() < 0.95:
-            raise ValueError("a plate was loaded twice (two foot contacts)")
-    (a0, b0), (a1, b1), (a2, b2) = (contacts[i] for i in order)
-    p0, p1, p2 = (plates[i] for i in order)
-    forward = p2.center - p0.center
-    forward[2] = 0.0
-    forward /= np.linalg.norm(forward)
-
-    def foot_on(plate, side: str, frame: int) -> bool:
-        return all(_inside(plate, points[f"{side}{m}"][frame], margin) for m, margin in PLATE_MARGIN.items()
-                   if np.isfinite(points[f"{side}{m}"][frame]).all())
-
-    # 80 ms after a strike (foot flat) and just before toe-off the two feet are
-    # on different plates; at mid-stance the swinging foot passes over the plate.
-    on = [s for s in "LR" if foot_on(p1, s, a1 + 8)]
-    if len(on) != 1:
-        raise ValueError(f"cannot tell which foot is on the middle plate ({on or 'none'})")
-    ref, other = on[0], "R" if on[0] == "L" else "L"
-    if not (foot_on(p0, other, b0 - 3) and foot_on(p2, other, a2 + 8) and foot_on(p1, ref, b1 - 3)):
-        raise ValueError("a foot is not fully on its plate")
-
-    def strike_bias(side: str, plate_start: int) -> int:
-        strikes = heel_strikes(points[f"{side}HEE"], pelvis, forward)
-        near = strikes[np.abs(strikes - plate_start) <= 15]
-        if near.size == 0:
-            raise ValueError(f"no {side} heel strike near its plate contact")
-        bias = int(near[np.argmin(np.abs(near - plate_start))]) - plate_start
-        if not -STRIKE_LEAD_LIMIT <= bias <= 3:
-            raise ValueError(f"{side} heel strike {bias:+d} frames from its plate contact (heel beside the plate)")
-        return bias
-
-    bias, bias_other = strike_bias(ref, a1), strike_bias(other, a2)
-    later = heel_strikes(points[f"{ref}HEE"], pelvis, forward)
-    later = later[later > b1]
-    if later.size == 0:
-        raise ValueError("the next heel strike of the reference foot is not in the recording")
-    cycle = GaitCycle(start=a1, cto=b0, chs=a2, to=b1, end=int(later[0]) - bias)
-    if not cycle.is_ordered():
-        raise ValueError(f"gait events out of order: {cycle}")
-    if not 0.6 <= (cycle.end - cycle.start) / RATE <= 2.5:
-        raise ValueError(f"implausible cycle time {(cycle.end - cycle.start) / RATE:.2f} s")
-    total = np.abs(plate_fz[cycle.start:cycle.end - 1].sum(axis=1))
-    if total.min() < 0.5 * weight:
-        raise ValueError(f"body weight not on the plates during the cycle (min {total.min() / weight:.2f} BW)")
-    return cycle, ("left" if ref == "L" else "right"), {"strike_bias": bias, "strike_bias_other": bias_other}
-
-
 def imu_lag(cluster: np.ndarray, gyro: np.ndarray, max_lag: int = 5) -> tuple[int, float]:
     """IMU samples by which the IMU trails the mocap frames, from the angular speed of the pelvis cluster.
 
@@ -329,7 +254,7 @@ def process_trial(c3d_path: str | Path, imu_path: str | Path, subject: int, body
     rec = read_c3d(c3d_path)
     if abs(rec.marker_rate - RATE) > 1e-6:
         raise ValueError(f"marker rate {rec.marker_rate} Hz, expected {RATE}")
-    floor = [p for p in rec.plates if abs(p.center[2]) < 50.0]
+    floor = floor_plates(rec.plates)
     if len(floor) != 3:
         raise ValueError(f"expected three floor plates, found {len(floor)}")
     labels = {v for v in {**ROLES, **ROLE_OVERRIDES.get(subject, {})}.values() if v} | set(PELVIS_CLUSTER)
@@ -339,7 +264,7 @@ def process_trial(c3d_path: str | Path, imu_path: str | Path, subject: int, body
     pelvis = np.mean([markers[m] for m in PELVIS_CLUSTER], axis=0)
 
     reaction = ground_reaction(floor, rec.analog_rate, rec.marker_rate, rec.n_frames)
-    cycle, side, events = three_plate_cycle(floor, reaction.plate_force[:, :, 2], body_mass, points, pelvis)
+    cycle, side, events = plate_cycle(floor, reaction.plate_force[:, :, 2], body_mass, points, pelvis, RATE)
     frames = cycle.frames
     if frames[-1] >= rec.n_frames:
         raise ValueError("the cycle ends after the recording")
@@ -430,12 +355,8 @@ def build(raw_dir: str | Path, out_dir: str | Path, workers: int | None = None, 
     used = sorted((r for r in rows if r["status"] == "used"), key=lambda r: (r["subject"], r["trial"]))
     if not used:
         raise RuntimeError("no trial could be converted")
-    train_idx, rest = train_test_split(np.arange(len(used)), test_size=0.2, random_state=seed)
-    val_idx, test_idx = train_test_split(rest, test_size=0.5, random_state=seed)
-    part_of = {**{int(i): "training" for i in train_idx}, **{int(i): "validation" for i in val_idx},
-               **{int(i): "testing" for i in test_idx}}
-    for i, r in enumerate(used):
-        r["set"] = part_of[i]
+    for r, which in zip(used, split_by_trial(len(used), seed=seed)):
+        r["set"] = which
         cycle_info = {"cycle_time_s": r["cycle_time_s"], "data_set": "Kuopio gait", "subject": f"S{r['subject']:02d}",
                       "trial": r["trial"], "speed": SPEEDS[r["trial"].split("_")[1]], **{k: r[k] for k in (
                           "reference_limb", "events_percent", "imu_lag_samples", "imu_lag_r", "strike_bias",

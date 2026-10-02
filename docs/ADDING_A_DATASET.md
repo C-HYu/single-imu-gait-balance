@@ -1,6 +1,8 @@
 # Using another data set
 
-The model only needs **gait-cycle folders**. There are two ways to make them.
+The model only needs **gait-cycle folders**. For your own recordings, `gait-balance convert-trials` (static and
+walking C3D plus an IMU file) and `gait-balance import-arrays` (processed arrays) write them for you; see
+[YOUR_DATA.md](YOUR_DATA.md). For anything else there are two ways.
 
 ## A. Write the gait-cycle folders yourself
 
@@ -59,9 +61,12 @@ The building blocks in the package:
 | `signals` | gap filling, filters, time normalization |
 | `forceplate.ground_reaction` | summed ground reaction and its COP |
 | `com.body_com` | 7-segment COM from named points (`com.REQUIRED_POINTS`) |
-| `gait` | plate contacts, heel strikes from the heel marker |
+| `gait` | plate contacts, heel strikes from the heel marker, gait cycle from three or four plates (`plate_cycle`) |
+| `segments` | marker set files, subject model from a static trial, segment optimization, label checks |
 | `inclination` | progression frame, IA, RCIA |
 | `imu` | body axes, filtering, cycle cut, mirroring |
+| `imu_files` | the sacral sensor from `.mtb`, `.mat` or `.csv` files |
+| `splits` | training/validation/testing division by trial (random or from a file) |
 | `download` | checked file download, partial download of remote zip files |
 | `xsens` | reading Xsens `.mtb` recordings (needs the Xsens MT Software Suite) |
 

@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 authors = [{ name = "Cheng-Hao Yu, PhD" }]
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "optuna", "ezc3d", "openpyxl",
+dependencies = ["numpy", "scipy", "pandas", "scikit-learn", "torch", "optuna", "ezc3d", "openpyxl", "matplotlib",
                 "pywin32; sys_platform == 'win32'"]
 
 [project.optional-dependencies]
@@ -18,6 +18,9 @@ test = ["pytest"]
 
 [project.scripts]
 gait-balance = "single_imu_gait_balance.cli:main"
+
+[project.gui-scripts]
+gait-balance-gui = "single_imu_gait_balance.gui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

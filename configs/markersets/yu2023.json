@@ -1,0 +1,43 @@
+{
+  "_comment": [
+    "Marker set of Yu et al. (2023), Sensors 23(22):9040, Figure 1 (lower body and acromions).",
+    "labels: landmark name used by the program -> marker label in your C3D files. If your labels differ,",
+    "copy this file and change only the right-hand side. Required: ASIS, PSIS, TRO, LFC, MFC, MMA, LMA, MTH,",
+    "SAP and HEE of both sides; the others only add markers to the clusters.",
+    "clusters: markers fitted together as one rigid segment, in this order. RHJC/LHJC (hip joint centers,",
+    "Bell's regression on ASIS and PSIS) and RAJC/LAJC (midpoint of the malleoli) are computed by the program.",
+    "carried: markers that move with a segment; only their missing frames are filled from it."
+  ],
+  "_landmarks": {
+    "ASI": "anterior superior iliac spine", "PSI": "posterior superior iliac spine",
+    "SAP": "acromion", "TRO": "greater trochanter", "THI": "thigh (lateral, technical marker)",
+    "LFC": "lateral femoral epicondyle", "MFC": "medial femoral epicondyle",
+    "TT": "tibial tuberosity", "SHA": "shank (lateral, technical marker)",
+    "LMA": "lateral malleolus", "MMA": "medial malleolus",
+    "HEE": "heel (calcaneus)", "FOO": "foot (technical marker)", "TOE": "toe (technical marker)",
+    "MTH": "first metatarsal head"
+  },
+  "labels": {
+    "LASI": "LASI", "RASI": "RASI", "LPSI": "LPSI", "RPSI": "RPSI",
+    "LSAP": "LSAP", "RSAP": "RSAP",
+    "LTRO": "LTRO", "LTHI": "LTHI", "LLFC": "LLFC", "LMFC": "LMFC",
+    "RTRO": "RTRO", "RTHI": "RTHI", "RLFC": "RLFC", "RMFC": "RMFC",
+    "LTT": "LTT", "LSHA": "LSHA", "LLMA": "LLMA", "LMMA": "LMMA",
+    "RTT": "RTT", "RSHA": "RSHA", "RLMA": "RLMA", "RMMA": "RMMA",
+    "LHEE": "LHEE", "LFOO": "LFOO", "LTOE": "LTOE", "LMTH": "LMTH",
+    "RHEE": "RHEE", "RFOO": "RFOO", "RTOE": "RTOE", "RMTH": "RMTH"
+  },
+  "clusters": {
+    "pelvis": ["RASI", "LASI", "RPSI", "LPSI"],
+    "right_thigh": ["RTRO", "RTHI", "RLFC", "RHJC", "RMFC"],
+    "left_thigh": ["LTRO", "LTHI", "LLFC", "LHJC", "LMFC"],
+    "right_shank": ["RTT", "RSHA", "RLMA", "RMMA"],
+    "left_shank": ["LTT", "LSHA", "LLMA", "LMMA"],
+    "right_foot": ["RHEE", "RFOO", "RTOE", "RAJC"],
+    "left_foot": ["LHEE", "LFOO", "LTOE", "LAJC"]
+  },
+  "carried": {
+    "right_foot": ["RMTH"],
+    "left_foot": ["LMTH"]
+  }
+}

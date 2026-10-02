@@ -15,8 +15,9 @@
 **Contents:**
 [What it computes](#what-it-computes) ·
 [Quick start](#quick-start) ·
+[Window](#the-window) ·
 [Results](#results-on-the-kuopio-data-set) ·
-[Your own data](#using-another-data-set) ·
+[Your own data](#your-own-recordings) ·
 [Xsens files](#xsens-mtb-recordings-optional) ·
 [Method](#method-details) ·
 [Citation](#citation) ·
@@ -89,6 +90,8 @@ The results are written to `runs/train_<time>/`:
 - one model per seed;
 - the error of every test gait cycle (`test_errors.csv`, opens in Excel).
 
+Prefer buttons to commands? Run `gait-balance gui` instead (see [The window](#the-window)).
+
 **How long it takes.** These times were measured on a desktop PC with an Intel Core i7-10700F CPU (8 cores), 32 GB
 RAM and an NVIDIA GeForce GTX 1650 SUPER (4 GB).
 
@@ -102,14 +105,33 @@ RAM and an NVIDIA GeForce GTX 1650 SUPER (4 GB).
 
 | Command | What it does |
 |---|---|
+| `gait-balance gui` | open the window: every step below with buttons |
 | `gait-balance datasets` | list the data sets that can be downloaded |
 | `gait-balance download kuopio` | fetch the data (`--method full` downloads the whole archives; `--zip-dir` uses archives you already have) |
 | `gait-balance build kuopio` | compute the IA, RCIA and IMU input of every gait cycle |
+| `gait-balance convert-trials <folder> --out <folder>` | the same for your own trial folders (static C3D, walking C3D, IMU file); see [Your own recordings](#your-own-recordings) |
+| `gait-balance import-arrays <folder> --spec <spec.json> --out <folder>` | read gait cycles you processed elsewhere (`.npz` or `.mat` arrays) |
 | `gait-balance train --data data/kuopio` | train and test (`--config configs/paper.json` for the paper's settings; `--seeds` for several runs) |
 | `gait-balance tune --data data/kuopio --trials 50` | Bayesian optimization of the hyper-parameters on the validation set; then train with `--config runs/tune_<time>/best_config.json` |
 | `gait-balance evaluate --model <model.pt> --test <folder>` | test a trained model on other gait cycles |
 | `gait-balance xsens-check` | can Xsens `.mtb` files be read on this computer, and what to install if not |
 | `gait-balance mtb2csv <file.mtb>` | export an Xsens `.mtb` recording to one CSV file per sensor |
+
+## The window
+
+`gait-balance gui` opens a window with the same steps as the commands, in four tabs:
+
+1. **Data**: download and convert the Kuopio data, or convert your own recordings;
+2. **Train & test**: choose the gait cycles, the hyper-parameters and the seeds, then see the errors next to the
+   paper's values and the measured and predicted curves;
+3. **Bayesian tuning**: search the hyper-parameters and pass the best ones to tab 2;
+4. **Test a model**: test a trained model on other gait cycles.
+
+Each step runs as the command shown at the top of its log, so its progress appears live and **Stop** ends it.
+
+<p align="center">
+  <img src="docs/figures/gui_train.png" width="85%" alt="The Train & test tab after training on the Kuopio data">
+</p>
 
 ## Results on the Kuopio data set
 
@@ -139,15 +161,31 @@ come from its own participants (13 young and 13 older adults) and are shown for 
   (Lavikainen et al., 2024; CC BY 4.0), processed with this software.
 </sub></p>
 
-## Using another data set
+## Your own recordings
 
 The model reads **gait-cycle folders**. Each folder holds one gait cycle:
-- `cycle.npz`: the IMU input (101 × 6), IA (101 × 2) and RCIA (101 × 2);
-- `cycle.json`: the gait-cycle duration.
+- `cycle.npz` and `cycle.json`: the IMU input (101 × 6), IA (101 × 2), RCIA (101 × 2) and the gait-cycle duration;
+- `imu_input.csv` and `ground_truth.csv`: the same numbers as text, readable in Excel.
 
-To train on your own data, write these folders and run
-`gait-balance train --data <folder with training/, validation/, testing/>`. To let others download and convert
-another public data set, add a small module like `datasets/kuopio.py`. Both ways are described in
+Your own data can be turned into such folders, for training, for testing a trained model, or just to obtain the
+input and output files:
+
+| You have | Command |
+|---|---|
+| **Trial folders**, each with a static C3D, a walking C3D (over three or four floor force plates) and the IMU file of the walk (`.mtb`, `.mat` or `.csv`) | `gait-balance convert-trials D:\my_study --out D:\my_cycles --split 80/10/10` |
+| **Gait cycles processed elsewhere**, as `.npz` or `.mat` arrays | `gait-balance import-arrays D:\my_arrays --spec spec.json --out D:\my_cycles --split 80/10/10` |
+
+- `convert-trials` follows the paper:
+  - the subject model comes from the static trial;
+  - each walk is processed with segment optimization, giving the 7-segment COM, the COP and the gait events;
+  - trials with mislabelled markers or a foot off its plate are rejected, and `trials.csv` says why.
+- The default marker set is the paper's (`configs/markersets/yu2023.json`). For other labels, copy it and change
+  the labels.
+- `--split 80/10/10` divides the gait cycles by trial into training, validation and testing. Without it, all
+  cycles go into one folder, for example to test a model on them.
+- Both are also in the window (tab 1). Details, folder layout and the spec file: [docs/YOUR_DATA.md](docs/YOUR_DATA.md).
+
+To let others download and convert another public data set, add a small module like `datasets/kuopio.py`; see
 [docs/ADDING_A_DATASET.md](docs/ADDING_A_DATASET.md).
 
 ## Xsens `.mtb` recordings (optional)
@@ -251,18 +289,30 @@ low-pass filtered at 25 Hz.
 - **IMU.** The pelvis IMU signals come from the authors' extracted files. The angular velocity is computed from the
   stored orientation increments, which equal the gyroscope output, so no Xsens software is needed.
 
+**Trial folders** (`datasets/trials.py`, `segments.py`):
+- **Static trial.** The quietest standing frames give the subject model: the mean marker positions, the hip joint
+  centers (Bell's regression on the ASIS and PSIS markers) and the ankle centers. The body mass comes from the
+  force plates unless it is given.
+- **Walking trial.** Marker gaps up to 0.15 s are filled and the markers low-pass filtered at 5 Hz. Each cluster
+  (pelvis, thighs, shanks, feet) is fitted to the static model as a rigid body in every frame; a marker more than
+  15 mm from the fit is left out of that frame.
+- **Gait cycle.** From the force-plate contacts: with four plates from the heel-strike on the second plate to the
+  heel-strike on the fourth; with three plates as for the Kuopio data.
+
 ## Repository layout
 
 ```
-configs/                    hyper-parameters (bi-GRU defaults, paper settings, search ranges)
-docs/                       how to use another data set; figure
+configs/                    hyper-parameters (bi-GRU defaults, paper settings, search ranges); markersets/
+docs/                       using your own recordings or another data set; figures
 src/single_imu_gait_balance/
     c3d.py signals.py forceplate.py com.py gait.py rigid.py inclination.py imu.py   ground truth and input
-    cycles.py                                     gait-cycle folders
+    segments.py imu_files.py                      static calibration and segment optimization; IMU files
+    cycles.py splits.py                           gait-cycle folders; training/validation/testing division
     model.py training.py metrics.py experiment.py bi-GRU, training, errors, optimization
     download.py datasets/kuopio.py                downloading and converting the Kuopio data
+    datasets/trials.py datasets/arrays.py         converting your own trial folders or arrays
     xsens.py                                      optional reading of Xsens .mtb recordings
-    cli.py                                        the gait-balance command
+    cli.py gui.py                                 the gait-balance command and the window
 tests/                      tests on invented data (pytest)
 data/, runs/                created on your computer, not part of the repository
 ```

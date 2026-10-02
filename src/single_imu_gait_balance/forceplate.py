@@ -7,7 +7,7 @@ Description : Ground reaction of the force plates in the laboratory frame and
               the marker frames.
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 """
 
 from __future__ import annotations
@@ -45,17 +45,25 @@ def plate_wrench(plate: ForcePlate, zero_samples: int = 10) -> tuple[np.ndarray,
     """Force (N) and moment about the laboratory origin (N mm) of one plate, laboratory frame.
 
     The mean of the first ``zero_samples`` samples (unloaded plate) is removed
-    as the zero offset.
+    as the zero offset; 0 keeps the signals as recorded (for a standing trial,
+    where the plates are loaded from the start).
     """
-    force = plate.force - plate.force[:zero_samples].mean(axis=0)
-    moment = plate.moment - plate.moment[:zero_samples].mean(axis=0)
+    force, moment = plate.force, plate.moment
+    if zero_samples:
+        force = force - force[:zero_samples].mean(axis=0)
+        moment = moment - moment[:zero_samples].mean(axis=0)
     force_lab = force @ plate.rotation.T
     moment_lab = moment @ plate.rotation.T + np.cross(plate.transducer_origin, force_lab)
     return force_lab, moment_lab
 
 
+def floor_plates(plates: list[ForcePlate], tolerance: float = 50.0) -> list[ForcePlate]:
+    """The plates set in the floor (surface within ``tolerance`` mm of height 0)."""
+    return [p for p in plates if abs(p.center[2]) < tolerance]
+
+
 def ground_reaction(plates: list[ForcePlate], analog_rate: float, marker_rate: float, n_frames: int,
-                    cutoff: float = 25.0, min_fz: float = 10.0) -> GroundReaction:
+                    cutoff: float = 25.0, min_fz: float = 10.0, zero_offset: bool = True) -> GroundReaction:
     """Summed ground reaction and its COP at the marker frame rate.
 
     Each plate is low-pass filtered (4th-order zero-phase Butterworth, 25 Hz)
@@ -75,11 +83,14 @@ def ground_reaction(plates: list[ForcePlate], analog_rate: float, marker_rate: f
         Marker frames of the recording.
     min_fz : float
         Below this total vertical force (N) the COP is undefined (NaN).
+    zero_offset : bool
+        Remove each plate's zero offset (first samples, unloaded plate); off
+        for a standing trial.
     """
     step = int(round(analog_rate / marker_rate))
     forces, moments = [], []
     for plate in plates:
-        force, moment = plate_wrench(plate)
+        force, moment = plate_wrench(plate, 10 if zero_offset else 0)
         forces.append(lowpass(force, analog_rate, cutoff)[::step])
         moments.append(lowpass(moment, analog_rate, cutoff)[::step])
     n = min(n_frames, min(f.shape[0] for f in forces))

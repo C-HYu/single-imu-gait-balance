@@ -19,11 +19,12 @@ Description : Optional reading of Xsens .mtb recordings (MT Manager log files).
               authors' extracted IMU files).
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 """
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
@@ -217,9 +218,11 @@ def read_mtb(path: str | Path, timeout_s: float = 600.0) -> dict[str, dict[str, 
         # A separate process keeps the COM server out of this one and lets a stuck read time out.
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "mtb.npz"
+            source = str(Path(__file__).resolve().parents[1])  # the worker finds this package even if not installed
+            env = {**os.environ, "PYTHONPATH": os.pathsep.join(p for p in (source, os.environ.get("PYTHONPATH")) if p)}
             try:
                 result = subprocess.run([sys.executable, "-m", "single_imu_gait_balance.xsens", str(path), str(target)],
-                                        capture_output=True, text=True, timeout=timeout_s,
+                                        capture_output=True, text=True, timeout=timeout_s, env=env,
                                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             except subprocess.TimeoutExpired:
                 raise RuntimeError(f"reading {path.name} did not finish within {timeout_s:.0f} s") from None

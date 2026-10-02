@@ -7,7 +7,7 @@ Description : Least-squares rigid-body fit of a marker cluster (SVD method,
               a point that moves with a cluster.
 Author      : Cheng-Hao Yu, PhD
 Created     : 2026-10-01
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 """
 
 from __future__ import annotations
@@ -15,7 +15,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def fit_rigid(local: np.ndarray, measured: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def fit_rigid(local: np.ndarray, measured: np.ndarray, used: np.ndarray | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Rotation and translation of a cluster in every frame.
 
     Missing markers (NaN) get zero weight; frames with fewer than three
@@ -27,6 +27,8 @@ def fit_rigid(local: np.ndarray, measured: np.ndarray) -> tuple[np.ndarray, np.n
         Cluster in its reference position.
     measured : ndarray, shape (n_frames, m, 3)
         Measured positions, NaN where missing.
+    used : ndarray of bool, shape (n_frames, m), optional
+        Markers to fit in each frame (default: every visible one).
 
     Returns
     -------
@@ -34,7 +36,8 @@ def fit_rigid(local: np.ndarray, measured: np.ndarray) -> tuple[np.ndarray, np.n
     translation : ndarray, shape (n_frames, 3)
         ``measured ~= local @ rotation.T + translation``.
     """
-    weight = np.isfinite(measured).all(axis=2).astype(float)  # (n, m)
+    visible = np.isfinite(measured).all(axis=2)
+    weight = (visible if used is None else visible & used).astype(float)  # (n, m)
     count = weight.sum(axis=1)
     g = np.nan_to_num(measured)
     w = weight[:, :, None]
@@ -51,6 +54,31 @@ def fit_rigid(local: np.ndarray, measured: np.ndarray) -> tuple[np.ndarray, np.n
     bad = count < 3
     rotation[bad], translation[bad] = np.nan, np.nan
     return rotation, translation
+
+
+def fit_rigid_robust(local: np.ndarray, measured: np.ndarray, outlier_limit: float
+                     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """:func:`fit_rigid` that leaves out a marker far from the fitted cluster.
+
+    While the largest residual of a frame exceeds ``outlier_limit`` (mm) and
+    more than three markers remain, that marker is dropped and the frame is
+    fitted again. This removes a swapped or misplaced label from the solution.
+
+    Returns
+    -------
+    rotation, translation : as :func:`fit_rigid`
+    used : ndarray of bool, shape (n_frames, m)
+        Markers that took part in the final fit.
+    """
+    used = np.isfinite(measured).all(axis=2)
+    while True:
+        rotation, translation = fit_rigid(local, measured, used)
+        implied = np.einsum("fij,mj->fmi", rotation, local) + translation[:, None]
+        residual = np.where(used, np.linalg.norm(implied - np.nan_to_num(measured), axis=2), 0.0)
+        rows = np.flatnonzero((residual.max(axis=1) > outlier_limit) & (used.sum(axis=1) > 3))
+        if rows.size == 0:
+            return rotation, translation, used
+        used[rows, np.argmax(residual[rows], axis=1)] = False
 
 
 def carried_point(point: np.ndarray, cluster: np.ndarray, min_frames: int = 10) -> np.ndarray:

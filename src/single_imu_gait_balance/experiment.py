@@ -128,6 +128,7 @@ def tune(parts: dict[str, CycleSet], space: dict, out_dir: str | Path, n_trials:
     """
     import optuna
 
+    space = {k: v for k, v in space.items() if not k.startswith("_")}  # "_comment" and the like
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     prepared = prepare({"train": parts["train"], "val": parts["val"]}, get_device(device))

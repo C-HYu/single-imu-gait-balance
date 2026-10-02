@@ -119,11 +119,30 @@ def test_short_bayesian_search(tmp_path):
     rng = np.random.default_rng(1)
     _invented_cycles(tmp_path / "training", 30, rng)
     parts = load_parts(tmp_path / "training", None, None)
-    space = {"hidden1": {"type": "int", "low": 4, "high": 8, "step": 4},
+    space = {"_comment": "notes are allowed", "hidden1": {"type": "int", "low": 4, "high": 8, "step": 4},
              "lam": {"type": "float", "low": 0.001, "high": 1.0, "log": True}}
     best = tune(parts, space, tmp_path / "search", n_trials=2, max_epochs=2, patience=2,
                 start_from={"hidden1": 8, "lam": 0.01}, device="cpu")
     assert set(best) >= {"hidden1", "lam", "max_epochs"} and (tmp_path / "search" / "best_config.json").exists()
+
+
+def test_window_opens():
+    import tkinter as tk
+
+    import pytest
+
+    from single_imu_gait_balance import gui
+    try:
+        root = tk.Tk()
+    except tk.TclError:
+        pytest.skip("no display")
+    root.withdraw()
+    app = gui.App(root)
+    assert app.notebook.index("end") == 4  # data, train & test, tuning, test a model
+    for source in ("trials", "arrays", "public"):  # the three kinds of data on the first tab
+        app.source.set(source)
+        app._show_source()
+    root.destroy()
 
 
 def test_extract_selected_members(tmp_path):
